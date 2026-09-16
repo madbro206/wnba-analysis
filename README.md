@@ -1,4 +1,4 @@
-# WNBA and women's college basketball analysis
+# WNBA analysis
 
 Curated analysis projects on women's basketball. Regression, network ranking, award
 prediction, and whatever else I get curious about during the season.
@@ -23,6 +23,17 @@ better than a coin flip and offensive rebounds are a literal coin flip at 50.1%.
 
 R, wehoop, ggplot2, gt ·
 [video](https://www.instagram.com/p/DYFg-2SzWAI/)
+
+### [What actually drives Defensive Player of the Year voting?](dpoy-predictions/)
+
+A logistic regression that gives every player a probability of winning DPOY, WNBA 1997 to
+2025. Defensive win shares, blocks and steals are the only inputs that matter, and adding
+team defense actually makes it slightly worse. It gets 19 of 28 seasons right on data it
+was trained on.
+
+R, rvest, dplyr ·
+[video one](https://www.instagram.com/p/DNi-fmrzeM-/) ·
+[video two](https://www.instagram.com/p/DNqtVPhT7mL/)
 
 More projects are going up as I clean them up.
 
