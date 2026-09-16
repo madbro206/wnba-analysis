@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+._*
+*.textclipping
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Python / notebooks
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+
+# Large media — keep the finished chart, not the raw capture
+*.mov
+*.mp4
+*.psd
+IMG_*.PNG
+IMG_*.JPG
+IMG_*.jpg
+
+# Cached data pulls (commit small source CSVs deliberately, ignore the rest)
+data/cache/
+*.rds
