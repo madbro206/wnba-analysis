@@ -3,8 +3,7 @@
 Curated analysis projects on women's basketball. Regression, network ranking, award
 prediction, and whatever else I get curious about during the season.
 
-I'm Maddy. I just finished a PhD in math at the University of Washington, and I run
-@wnbadata on [TikTok](https://www.tiktok.com/@wnbadata) and
+I'm Maddy. I just finished a PhD in math and advanced data science at the University of Washington, and I run @wnbadata on [TikTok](https://www.tiktok.com/@wnbadata) and
 [Instagram](https://www.instagram.com/wnbadata/), where I turn work like this into short
 video explainers for 30k+ followers. I'm currently looking for data science work in
 basketball.
@@ -34,6 +33,16 @@ was trained on.
 R, rvest, dplyr ·
 [video one](https://www.instagram.com/p/DNi-fmrzeM-/) ·
 [video two](https://www.instagram.com/p/DNqtVPhT7mL/)
+
+### [What is a steal actually worth?](team-ridge-regression/)
+
+Ridge regression on player box scores, WNBA 2024 to 2026, scaled so one point equals 1. A
+steal comes out worth about 4 points and a turnover costs about 5.6, so the two biggest
+effects in the box score are both possession events. Inspired by Benjamin Morris's NBA
+version, where a steal was worth around 9.
+
+R, wehoop, glmnet, ggplot2 ·
+[video](https://www.instagram.com/reels/DXHsCdHzywf/)
 
 More projects are going up as I clean them up.
 
