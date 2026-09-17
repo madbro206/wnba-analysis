@@ -1,16 +1,15 @@
 # WNBA analysis
 
 Curated analysis projects on women's basketball. Regression, network ranking, award
-prediction, and whatever else I get curious about during the season.
+prediction, and whatever else I get curious about during the season (and want to write cleanly!)
 
-I'm Maddy. I just finished a PhD in math and advanced data science at the University of Washington, and I run @wnbadata on [TikTok](https://www.tiktok.com/@wnbadata) and
-[Instagram](https://www.instagram.com/wnbadata/), where I turn work like this into short
+I'm Maddy! I just finished a PhD in math and advanced data science at the University of Washington, and I run @wnbadata on [TikTok](https://www.tiktok.com/@wnbadata) and
+[Instagram](https://www.instagram.com/wnbadata/), where I turn coding work like this into short
 video explainers for 30k+ followers. I'm currently looking for data science work in
-basketball.
+basketball (especially women's basketball!)
 
-Each project below is its own folder with three things in it: the script, a write up of
-what I actually found, and the charts. Where there's a video version, the project links
-to it.
+Each project below is its own folder with the R script, a write up of
+what I found, and some charts. I have also included links to my video explanations as well.
 
 ## Projects
 
@@ -48,37 +47,18 @@ More projects are going up as I clean them up.
 
 ## Data
 
-Everything here runs on **public data**, mostly
+Everything here uses on **public data**, mostly
 [`wehoop`](https://wehoop.sportsdataverse.org/), the sportsdataverse R package for
-women's basketball (ESPN play by play and box scores). No proprietary or paywalled
-sources, so anyone can reproduce any of it.
+women's basketball (ESPN play by play and box scores).
 
 If a project needs data that isn't available through an API, like something hand
-collected or scraped, the CSV is committed next to the script in that project's `data/`
+collected or scraped, the CSV will be committed next to the script in that project's `data/`
 folder and the source is named in the project README.
-
-## Running any of these
-
-Each project folder is self contained: one script, its README, and its outputs.
-
-```r
-# from inside a project folder
-source("which-stats-actually-matter.R")
-```
-
-Scripts use relative paths and assume the project folder is the working directory.
-Common packages across projects:
-
-```r
-install.packages(c("tidyverse", "wehoop", "gt", "scales"))
-```
-
-Individual projects note any extras in their own README.
 
 ## Related
 
 - **@wnbadata** for the videos: [TikTok](https://www.tiktok.com/@wnbadata) and
   [Instagram](https://www.instagram.com/wnbadata/)
 - **[madbro206/wnbadata](https://github.com/madbro206/wnbadata)** for the full working
-  archive: about three years of exploratory scripts behind every video, unedited. This
-  repo is the cleaned up subset.
+  archive: about three years of exploratory scripts behind every video (unedited and definitely a little messy). This
+  repo is the cleaned up subset of my best hits :)
