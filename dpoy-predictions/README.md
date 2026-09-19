@@ -164,13 +164,39 @@ Blocks and steals are also just bad proxies for defensive value. They miss every
 doesn't get recorded, like positioning, rotations, and the shots that never get taken. And
 award voting has reputation effects that don't get captured in the box score.
 
+## The 2026 version
+
+`dpoy-2026.R` is a rewrite of this, built to predict the 2026 award. Three things changed.
+
+Every stat becomes a **within season percentile** instead of a raw total, so a player is
+compared to that year's field rather than to 1998. Voters compare you to the people you
+played against, and this also handles the season getting longer and the league getting
+bigger over 30 years.
+
+There's **one model instead of two**. The team defensive stats are still in the file, just
+commented out, because every one of them landed between p = 0.49 and p = 0.86 and cutting
+all five changed the 2026 board almost not at all. That takes it from 14 predictors to 9,
+which matters when there are only about 30 winners in league history to learn from.
+
+And players now have to clear **20 games and 15 minutes a night** to be included. Without
+that, the model happily hands the award to someone who played twice and did nothing, since
+games and minutes both come out with negative coefficients.
+
+It gets 20 of the last 29 seasons right, on seasons it was trained on. Defensive win
+shares is the only variable that's clearly significant (p = 0.00026); blocks and steals
+have the biggest coefficients but sit just outside at 0.08 and 0.07.
+
+The file also has the charts I used for the video at the bottom.
+
 ## Run it
 
 ```r
-source("dpoy-predictions.R")
+source("dpoy-predictions.R")   # the original, 1997-2025, raw stats, two models
+source("dpoy-2026.R")          # percentiles, one model, predicts 2026
 ```
 
-Requires: `rvest`, `purrr`, `dplyr`.
+Requires: `rvest`, `purrr`, `dplyr`. The 2026 version also needs `ggplot2`, `tidyr`,
+`tibble` and `ggrepel` for the charts.
 
-It scrapes about 87 pages with a 4 second pause on each one, so give it roughly six
+Either one scrapes about 90 pages with a 4 second pause on each, so give it roughly six
 minutes.
