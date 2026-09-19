@@ -1,6 +1,5 @@
 #wnba dpoy predictor, 2026 edition
-#this is the rewrite of dpoy-predictions.R: every stat becomes a within season
-#percentile, one model instead of two, and it predicts the 2026 award
+#this is the rewrite of dpoy-predictions.R for 2026
 #inspired by https://www.linkedin.com/pulse/predicting-nba-defensive-player-year-dpoy-using-data-science-khatkar-0uh6c/
 library(rvest)
 library(purrr)
@@ -9,14 +8,11 @@ library(ggplot2)
 
 years    <- 1997:2026
 
-#the season being predicted. it has no winner yet, so it's held out of the accuracy
-#numbers and it's the season top_ten() reports on
+#season being predicted
 current_season <- 2026
 base_url <- "https://www.basketball-reference.com/wnba/years/"
 
-#only look at real rotation players. without this the model happily hands a high
-#probability to someone who played 2 games and did nothing, since G and MP come out
-#with negative coefficients
+#only look at rotation players
 min_games <- 20
 min_mpg   <- 15
 
@@ -95,7 +91,7 @@ joined_table <- advanced %>%
   )
 
 
-#team stats. the advanced table is the 7th one through 2015 and the 8th after
+#team stats- the advanced table is the 7th one through 2015 and the 8th after
 team_stats <- map(years, ~ scrape_bref(.x, ".html", if (.x <= 2015) 7 else 8)) %>%
   Filter(Negate(is.null), .) %>%
   bind_rows()
@@ -193,9 +189,7 @@ total_table <- joined_table_clean %>%
 model_stats <- c("G", "MP", "BLK_pct", "STL_pct", "BLK", "STL", "DRB", "DWS",
                  "DRtg", "def_efg", "def_tov_pct", "opp_drb_pct", "def_FT_ratio")
 
-#turn every stat into a within season percentile. the award is relative: voters compare a
-#player to the rest of that season's field, not to 1998. this also handles the season
-#getting longer and the league getting bigger over 30 years
+#turn every stat into a within season percentile
 add_percentiles <- function(data, stats = model_stats) {
   data %>%
     filter(if_all(all_of(stats), ~ !is.na(.))) %>%
@@ -232,12 +226,14 @@ report_accuracy <- function(acc, label) {
 
 #who the model picked vs who actually won, by season
 compare_by_season <- function(data) {
+  #keep the dpoy flag on the top pick, that's what says whether we got it right.
+  #checking it this way also handles 2025, where either co-winner counts
   predicted <- data %>%
     filter(Season != current_season) %>%
     group_by(Season) %>%
     slice_max(dpoy_prob_norm, n = 1, with_ties = FALSE) %>%
     ungroup() %>%
-    select(Season, Predicted = Player, dpoy_prob_norm)
+    select(Season, Predicted = Player, dpoy_prob_norm, hit = dpoy)
 
   #2025 was a tie, so collapse co-winners into one row instead of duplicating the season
   actual <- data %>%
@@ -247,6 +243,8 @@ compare_by_season <- function(data) {
 
   predicted %>%
     left_join(actual, by = "Season") %>%
+    mutate(Correct = ifelse(hit == 1, "✅", "❌")) %>%
+    select(Season, Predicted, dpoy_prob_norm, Actual, Correct) %>%
     arrange(Season)
 }
 
@@ -273,16 +271,13 @@ top_ten <- function(data, cols) {
 # top_ten(probs, c("Player", "Team", "STL", "BLK", "DRB", "DWS", "DRtg"))
 
 
-#player stats only, no team defense. the five team terms were doing nothing (every one
-#of them p > 0.49) and cutting them takes this from 14 predictors to 9, which matters
-#when there are only about 30 winners to learn from. it also drops the inner join with
-#team_stats, so no player seasons get lost to a team that didn't match
+#player stats only
 player_stats <- c("G", "MP", "BLK_pct", "STL_pct", "BLK", "STL", "DRB", "DWS")
 
 player_data <- add_percentiles(joined_table_clean, player_stats)
 
-player_formula <- dpoy ~ p_G + p_MP + p_BLK_pct + p_STL_pct + p_BLK + p_STL + p_BLK*p_STL +
-  p_DRB + p_DWS
+player_formula <- dpoy ~ p_G + p_MP + p_BLK_pct + p_STL_pct + p_BLK + p_STL + 
+  p_BLK*p_STL + p_DRB + p_DWS
 
 player_model <- glm(player_formula, data = player_data, family = binomial)
 summary(player_model)
@@ -293,6 +288,15 @@ print(compare_by_season(player_probs), n = 29)
 top_ten(player_probs, c("Player", "Team", "STL", "BLK", "DRB", "DWS"))
 
 
+top <- function(data, cols) {
+  data %>%
+    filter(Season == current_season) %>%
+    select(all_of(cols), dpoy_prob_norm) %>%
+    arrange(desc(dpoy_prob_norm)) %>%
+    head(15)
+}
+top(player_probs, c("Player", "Team"))
+
 
 #gabby
 player_data %>% filter(grepl("Gabby Williams", Player), Season >= 2024) %>%
@@ -301,7 +305,7 @@ player_data %>% filter(grepl("Gabby Williams", Player), Season >= 2024) %>%
 
 
 #####
-#charts for the video
+#chart for the video
 #####
 
 accent <- "#E8730C"
@@ -316,28 +320,6 @@ wnbadata_theme <- theme_minimal(base_size = 13) +
   )
 
 
-#1. rhyne vs gabby, the "more of everything" chart
-head_to_head <- player_probs %>%
-  filter(Season == current_season,
-         Player %in% c("Rhyne Howard", "Gabby Williams")) %>%
-  select(Player, Steals = STL, Blocks = BLK, `Def rebounds` = DRB, `Def win shares` = DWS) %>%
-  tidyr::pivot_longer(-Player, names_to = "stat", values_to = "value")
-
-ggplot(head_to_head, aes(x = Player, y = value, fill = Player)) +
-  geom_col(width = 0.65) +
-  geom_text(aes(label = value), vjust = -0.4, size = 4.5) +
-  facet_wrap(~ stat, scales = "free_y", nrow = 1) +
-  scale_fill_manual(values = c("Rhyne Howard" = accent, "Gabby Williams" = muted)) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.18))) +
-  labs(x = NULL, y = NULL, title = "Rhyne Howard has more of everything the model looks at",
-       subtitle = "WNBA 2026", caption = "data: basketball reference | chart: @wnbadata") +
-  wnbadata_theme +
-  theme(legend.position = "none", axis.text.y = element_blank())
-
-# ggsave("figures/rhyne-vs-gabby.png", width = 10, height = 4.5, dpi = 200)
-
-
-#2. which stats the model actually leans on, greyed out where it isn't significant
 coef_tbl <- as.data.frame(summary(player_model)$coefficients)
 names(coef_tbl) <- c("estimate", "se", "z", "p")
 coef_tbl$term <- rownames(coef_tbl)
@@ -358,97 +340,7 @@ ggplot(coef_tbl, aes(x = reorder(label, estimate), y = estimate, fill = sig)) +
   coord_flip() +
   scale_fill_manual(values = c("significant" = accent, "not significant" = muted)) +
   labs(x = NULL, y = "Coefficient", fill = NULL,
-       title = "Defensive win shares is the only stat that really holds up",
-       subtitle = "everything is a within-season percentile, so the sizes are comparable",
+    title = "How much each stat matters toward winning DPOY",
+    subtitle = "orange means the model is confident about it",
        caption = "chart: @wnbadata") +
   wnbadata_theme
-
-# ggsave("figures/dpoy-coefficients.png", width = 8, height = 5, dpi = 200)
-
-
-#3. the 2026 board, with atlanta lit up
-board <- player_probs %>%
-  filter(Season == current_season) %>%
-  arrange(desc(dpoy_prob_norm)) %>%
-  head(10) %>%
-  mutate(is_atl = ifelse(Team == "ATL", "Atlanta", "everyone else"))
-
-ggplot(board, aes(x = reorder(Player, dpoy_prob_norm), y = dpoy_prob_norm, fill = is_atl)) +
-  geom_col(width = 0.7) +
-  geom_text(aes(label = paste0(round(dpoy_prob_norm, 1), "%")), hjust = -0.15, size = 4) +
-  coord_flip() +
-  scale_fill_manual(values = c("Atlanta" = accent, "everyone else" = muted)) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-  labs(x = NULL, y = NULL, fill = NULL,
-       title = "My model's 2026 DPOY board",
-       subtitle = "three of the top ten are Dream players",
-       caption = "chart: @wnbadata") +
-  wnbadata_theme
-
-# ggsave("figures/board-2026.png", width = 8, height = 5.5, dpi = 200)
-
-
-#4. my model vs the betting market
-implied <- function(american) {
-  ifelse(american < 0, -american / (-american + 100), 100 / (american + 100))
-}
-
-odds <- tibble::tribble(
-  ~Player,             ~american,
-  "Gabby Williams",       -125,
-  "A'ja Wilson",           175,
-  "Shakira Austin",        550,
-  "Angel Reese",          1000,
-  "Kiah Stokes",          9000,
-  "Natasha Howard",      10000,
-  "Veronica Burton",     15000,
-  "Rhyne Howard",        25000
-) %>%
-  mutate(vegas = implied(american) * 100)
-
-vs_market <- player_probs %>%
-  filter(Season == current_season) %>%
-  select(Player, model = dpoy_prob_norm) %>%
-  inner_join(odds, by = "Player")
-
-#anything on the dashed line means we agree. gabby is bottom right, rhyne is top left
-ggplot(vs_market, aes(x = vegas, y = model)) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = muted) +
-  geom_point(size = 4, color = accent) +
-  ggrepel::geom_text_repel(aes(label = Player), size = 4, seed = 1, box.padding = 0.5) +
-  coord_equal(xlim = c(0, 60), ylim = c(0, 60)) +
-  labs(x = "betting odds, implied chance (%)", y = "my model (%)",
-       title = "Where my model and the betting market disagree",
-       subtitle = "on the dashed line we agree. gabby williams and rhyne howard are opposite corners",
-       caption = "chart: @wnbadata") +
-  wnbadata_theme +
-  theme(panel.grid.major.y = element_line(color = "grey92"))
-
-# ggsave("figures/model-vs-market.png", width = 8, height = 5, dpi = 200)
-
-
-#5. being elite at blocks AND steals barely beats being elite at one
-b <- coef(player_model)
-archetype_score <- function(blk, stl) {
-  b["p_BLK"] * blk + b["p_STL"] * stl + b["p_BLK:p_STL"] * blk * stl
-}
-
-archetypes <- tibble::tribble(
-  ~who,                 ~blk, ~stl,
-  "blocks only",         0.9,  0.1,
-  "steals only",         0.1,  0.9,
-  "both",                0.9,  0.9
-) %>%
-  mutate(score = archetype_score(blk, stl))
-
-ggplot(archetypes, aes(x = factor(who, levels = who), y = score)) +
-  geom_col(width = 0.6, fill = accent) +
-  geom_text(aes(label = round(score, 1)), vjust = -0.4, size = 5) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-  labs(x = NULL, y = "model score from blocks + steals",
-       title = "Being elite at both barely beats being elite at one",
-       subtitle = "90th percentile vs 10th percentile, using the fitted coefficients",
-       caption = "chart: @wnbadata") +
-  wnbadata_theme
-
-# ggsave("figures/blocks-and-steals.png", width = 7, height = 5, dpi = 200)
