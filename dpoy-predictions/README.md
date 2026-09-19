@@ -166,25 +166,28 @@ award voting has reputation effects that don't get captured in the box score.
 
 ## The 2026 version
 
-`dpoy-2026.R` is a rewrite of this, built to predict the 2026 award. Three things changed.
+`dpoy-2026.R` is a rewrite of this, built to predict the 2026 award. There are a few differences from the original version:
 
-Every stat becomes a **within season percentile** instead of a raw total, so a player is
-compared to that year's field rather than to 1998. Voters compare you to the people you
+Every stat uses a **within season percentile** instead of a raw total, so a player is
+compared specifically to that year's players. Voters compare you to the people you
 played against, and this also handles the season getting longer and the league getting
 bigger over 30 years.
 
 There's **one model instead of two**. The team defensive stats are still in the file, just
-commented out, because every one of them landed between p = 0.49 and p = 0.86 and cutting
-all five changed the 2026 board almost not at all. That takes it from 14 predictors to 9,
+commented out, because every one of them ended up between p = 0.49 and p = 0.86 and cutting
+all five changed the 2026 results almost not at all. That takes it from 14 predictors to 9,
 which matters when there are only about 30 winners in league history to learn from.
 
-And players now have to clear **20 games and 15 minutes a night** to be included. Without
-that, the model happily hands the award to someone who played twice and did nothing, since
+Players have to have at least **20 games and 15 minutes a night** to be included. Without
+that, the model will always favor someone with like two games played for the award, since
 games and minutes both come out with negative coefficients.
 
-It gets 20 of the last 29 seasons right, on seasons it was trained on. Defensive win
-shares is the only variable that's clearly significant (p = 0.00026); blocks and steals
-have the biggest coefficients but sit just outside at 0.08 and 0.07.
+This version of the model gets 20 of the last 29 seasons right, on seasons it was trained on. Defensive win
+shares, unsurprisingly, is the only variable that's clearly significant (p = 0.00026); blocks and steals
+have the biggest coefficients but sit just outside at 0.08 and 0.07. 
+
+I also experimented with regularization in this model, but it did not improve the significance of the results 
+nor change the ultimate ranking of the players.
 
 The file also has the charts I used for the video at the bottom.
 
