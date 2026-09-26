@@ -4,7 +4,7 @@
 simulate the playoff bracket 100,000 times. The Lynx are the favorite at 27%, which means
 they still lose the title almost 3 out of 4 times.**
 
-Video explainer: [@wnbadata](LINK).
+Video explainer: [@wnbadata](https://www.instagram.com/p/Dduq-BJv_iV/).
 
 ![Chance to win the 2026 title](figures/title_odds.png)
 
