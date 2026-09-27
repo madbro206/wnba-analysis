@@ -6,6 +6,8 @@ they still lose the title almost 3 out of 4 times.**
 
 Video explainer: [@wnbadata](https://www.instagram.com/p/Dduq-BJv_iV/).
 
+Follow-up: [elo-playoff-sim](../elo-playoff-sim) runs the same bracket with Elo, which weights recent games more.
+
 ![Chance to win the 2026 title](figures/title_odds.png)
 
 ## The data
