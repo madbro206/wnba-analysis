@@ -7,6 +7,8 @@ game equally and had the Lynx as the favorite (27%).**
 
 Video explainer: [@wnbadata](https://www.instagram.com/p/DdxUSGXz8DB/).
 
+Follow-up: [xgboost-playoff-sim](../xgboost-playoff-sim) tries machine learning, an XGBoost model trained on every game since 2003. It ties Elo on 2026 games.
+
 ![Chance to win the 2026 title](figures/title_odds.png)
 
 ## The data

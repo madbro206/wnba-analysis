@@ -1,6 +1,6 @@
 # WNBA analysis
 
-Curated analysis projects on women's basketball. Regression, network ranking, award
+Curated analysis projects on women's basketball. Game prediction, regression, award
 prediction, and whatever else I get curious about during the season (and want to write cleanly!)
 
 I'm Maddy! I just finished a PhD in math and advanced data science at the University of Washington, and I run @wnbadata on [TikTok](https://www.tiktok.com/@wnbadata) and
