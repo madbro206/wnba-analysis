@@ -13,6 +13,21 @@ what I found, and some charts. I have also included links to my video explanatio
 
 ## Projects
 
+### Predicting the 2026 WNBA playoffs, three ways
+
+Three models of single games, each plugged into the same 100,000-bracket simulation.
+[Bradley-Terry](bradley-terry-playoff-sim/) weights every 2026 game equally and made the Lynx
+the pre-playoff favorite at 27%. [Elo](elo-playoff-sim/) counts recent games more and flipped
+it to the Valkyries at 31%. [XGBoost](xgboost-playoff-sim/), trained on every game since 2003,
+picked the winner of about 70% of 2026 games it hadn't seen, the same as Elo. Both head-to-head
+tests (Bradley-Terry vs Elo, XGBoost vs Elo) came out statistically tied, and the models still
+disagree about who wins the title.
+
+R, wehoop, xgboost, ggplot2 ·
+[Bradley-Terry video](https://www.instagram.com/p/Dduq-BJv_iV/) ·
+[Elo video](https://www.instagram.com/p/DdxUSGXz8DB/) ·
+[XGBoost video](https://www.instagram.com/p/DeC6l80Sedz/)
+
 ### [Which stats actually matter?](which-stats-actually-matter/)
 
 Win% for the team that led each stat in a game, WNBA 2024-2026. Effective field goal
