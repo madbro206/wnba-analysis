@@ -1,12 +1,12 @@
 # WNBA analysis
 
-Curated analysis projects on women's basketball. Game prediction, regression, award
-prediction, and whatever else I get curious about during the season (and want to write cleanly!)
+Here are my curated analysis projects on women's basketball data. Includes: game prediction, regression, award
+prediction, and whatever else interests me during the season (and want to write cleanly!)
 
 I'm Maddy! I just finished a PhD in math and advanced data science at the University of Washington, and I run @wnbadata on [TikTok](https://www.tiktok.com/@wnbadata) and
-[Instagram](https://www.instagram.com/wnbadata/), where I turn coding work like this into short
+[Instagram](https://www.instagram.com/wnbadata/), where I take coding work like this and make it into short
 video explainers for 30k+ followers. I'm currently looking for data science work in
-basketball (especially women's basketball!)
+basketball (especially women's basketball!) I am also open to creating paid content around basketball, sports analytics, and data science.
 
 Each project below is its own folder with the R script, a write up of
 what I found, and some charts. I have also included links to my video explanations as well.
